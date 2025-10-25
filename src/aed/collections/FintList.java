@@ -1,8 +1,6 @@
 package aed.collections;
-
 import aed.utils.TimeAnalysisUtils;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -18,26 +16,19 @@ Este código esta enorme hahaah, que eu estou me a passar haha
 public class FintList implements Iterable<Integer> {
 
     public class FintListIterator implements Iterator<Integer> {
-
         private int index = head;
 
-        @Override
         public boolean hasNext() {
             return index != -1;
         }
 
-        @Override
         public Integer next() {
-
             int result = values[index];
             index = nextIndex[index];
-
             return result;
         }
     }
 
-
-    // todo---------------------------------------------------------
 
     private final int CAPACIDADE_INICIAL = 16;
 
@@ -54,8 +45,7 @@ public class FintList implements Iterable<Integer> {
     private int lastNodeIndex; // index do array
 
 
-    public FintList()
-    {
+    public FintList() {
         values = new int[CAPACIDADE_INICIAL];
         nextIndex = new int[CAPACIDADE_INICIAL];
         prevIndex = new int[CAPACIDADE_INICIAL];
@@ -106,12 +96,10 @@ public class FintList implements Iterable<Integer> {
         this.values = values;
         this.nextIndex = nextIndex;
         this.prevIndex = prevIndex;
-
     }
 
 
-    public boolean add(int item)
-    {
+    public boolean add(int item) {
 
         if (freeList == -1){
             resize(capacity*2);
@@ -133,13 +121,11 @@ public class FintList implements Iterable<Integer> {
         tail = index;
         size++;
 
-
         return true;
     }
 
 
-    public int get()
-    {
+    public int get() {
         if (isEmpty()){
             throw new IndexOutOfBoundsException("Erro no get");
         }
@@ -150,8 +136,7 @@ public class FintList implements Iterable<Integer> {
 
     public int size() { return size; }
 
-    public int remove()
-    {
+    public int remove() {
         if (isEmpty()){
             throw new IndexOutOfBoundsException("Erro no remove");
         }
@@ -159,14 +144,13 @@ public class FintList implements Iterable<Integer> {
         int index = tail;
 
         if (size == 1){
-
             index = head;
             head = -1;
             tail = -1;
 
         }else{
 
-            int pneulIndex = prevIndex[tail];;
+            int pneulIndex = prevIndex[tail];
             nextIndex[pneulIndex] = -1;
             tail = pneulIndex;
 
@@ -184,10 +168,9 @@ public class FintList implements Iterable<Integer> {
     }
 
 
-    public void addAt(int index, int item)
-    {
+    public void addAt(int index, int item) {
         if (index < 0 || index > size()){
-            throw new IndexOutOfBoundsException("Erro no get");
+            throw new IndexOutOfBoundsException("Erro no addAt");
         }
 
         if (index == size){
@@ -200,98 +183,91 @@ public class FintList implements Iterable<Integer> {
         }
 
 
-        int in = freeList;
-        freeList = nextIndex[freeList];
+        int newIndex = freeList;
+        freeList = nextIndex[newIndex];
+        values[newIndex] = item;
 
-
-        values[in] = item;
 
         if (index == 0){
 
-            prevIndex[in] = -1;
-            nextIndex[in] = head;
+            prevIndex[newIndex] = -1;
+            nextIndex[newIndex] = head;
 
             if (head != -1){
-
-                prevIndex[head] = in;
+                prevIndex[head] = newIndex;
             }
 
-            head = in;
+            head = newIndex;
 
             if (isEmpty()){
                 tail = head;
             }
 
             lastIndex = index;
-            lastNodeIndex = in;
+            lastNodeIndex = newIndex;
             size++;
-
-        }else{
-
-
-            int next_index = head;
-            int dista_head = index;
-            int dista_tail = size-1-index;
-            int dista_lastIndex = lastIndex - index;
-
-
-
-            if (dista_lastIndex < 0){
-                dista_lastIndex = dista_lastIndex * -1;
-            }
-
-
-            if (dista_head <= dista_lastIndex && dista_head <= dista_tail){
-                next_index = head;
-                for (int i = 0; i < index; i++){
-                    next_index = nextIndex[next_index];
-                }
-            }
-
-
-            else if (dista_tail < dista_lastIndex){
-                next_index = tail;
-                for (int i = size - 1; i > index; i--){
-                    next_index = prevIndex[next_index];
-                }
-            }
-
-
-            else{
-
-                if (index > lastIndex){
-                    next_index = lastNodeIndex;
-                    for (int i = lastIndex; i < index; i++){
-                        next_index = nextIndex[next_index];
-                    }
-                }else{
-                    next_index = lastNodeIndex;
-                    for (int i = lastIndex; i > index; i--){
-                        next_index = prevIndex[next_index];
-                    }
-
-                }
-            }
-
-            int prev = prevIndex[next_index];
-
-            nextIndex[in] = next_index;
-            prevIndex[in] = prev;
-
-            if (prev != -1){
-                nextIndex[prev] = in;
-            }
-
-            prevIndex[next_index] = in;
-
-            size++;
-            lastNodeIndex = in;
-            lastIndex = index;
+            return;
         }
+
+
+        int next_index = getNextIndex(index);
+        int prev = prevIndex[next_index];
+
+        nextIndex[newIndex] = next_index;
+        prevIndex[newIndex] = prev;
+
+        if (prev != -1){
+            nextIndex[prev] = newIndex;
+        }
+
+        prevIndex[next_index] = newIndex;
+
+        size++;
+        lastNodeIndex = newIndex;
+        lastIndex = index;
+        
     }
 
-    public int getFirst()
-    {
+    private int getNextIndex(int index) {
+        int next_index;
+        int dista_tail = size - 1 - index;
+        int dista_lastIndex = lastIndex - index;
+
+
+        if (dista_lastIndex < 0){
+            dista_lastIndex = dista_lastIndex * -1;
+        }
+
+
+        if (index <= dista_lastIndex && index <= dista_tail){
+            next_index = head;
+            for (int i = 0; i < index; i++){
+                next_index = nextIndex[next_index];
+            }
+        } else if (dista_tail < dista_lastIndex){
+            next_index = tail;
+            for (int i = size - 1; i > index; i--){
+                next_index = prevIndex[next_index];
+            }
+        } else{
+
+            if (index > lastIndex){
+                next_index = lastNodeIndex;
+                for (int i = lastIndex; i < index; i++){
+                    next_index = nextIndex[next_index];
+                }
+            }else{
+                next_index = lastNodeIndex;
+                for (int i = lastIndex; i > index; i--){
+                    next_index = prevIndex[next_index];
+                }
+
+            }
+        }
+        return next_index;
+    }
+
+    public int getFirst() {
         if (isEmpty()){
             throw new IndexOutOfBoundsException("Erro no getFirst");
         }
@@ -299,140 +275,25 @@ public class FintList implements Iterable<Integer> {
         return values[head];
     }
 
-    public int get(int index)
-    {
-
+    public int get(int index) {
         if (index < 0 || index >= size()){
             throw new IndexOutOfBoundsException("Erro no get");
         }
 
-        if (lastIndex != -1){
-            if(index == lastIndex){
-                //System.out.println("Passei por aqui 1");
 
-                return values[lastNodeIndex];
-
-            } else if (index == lastIndex + 1){
-                //System.out.println("Passei por aqui 2");
-
-                int x = nextIndex[lastNodeIndex];
-                lastIndex = index;
-                lastNodeIndex = x;
-
-                if (x != -1){
-                    return values[x];
-                }
-
-            }else if (index == lastIndex - 1){
-                //System.out.println("Passei por aqui 3");
-
-
-                int x = prevIndex[lastNodeIndex];
-
-                lastNodeIndex = x;
-                lastIndex = index;
-
-                if (x != -1){
-                    return values[x];
-                }
-            }
-        }
-
-        int dista_head = index;
-        int dista_tail = size-1-index;
-        int dista_lastIndex = lastIndex - index;
-
-        if (dista_lastIndex < 0){
-            dista_lastIndex = dista_lastIndex * -1;
-        }
-
-        int index_atual;
-
-        if (dista_head < dista_lastIndex && dista_head < dista_tail){
-            index_atual = head;
-            for (int i = 0; i < index; i++){
-                index_atual = nextIndex[index_atual];
-            }
-        }
-        else if (dista_tail < dista_lastIndex){
-            index_atual = tail;
-            for (int i = size - 1; i > index; i--){
-                index_atual = prevIndex[index_atual];
-            }
-        }else{
-
-            if (index > lastIndex){
-                index_atual = lastNodeIndex;
-                for (int i = lastIndex; i < index; i++){
-                    index_atual = nextIndex[index_atual];
-                }
-            }else{
-                index_atual = lastNodeIndex;
-                for (int i = lastIndex; i > index; i--){
-                    index_atual = prevIndex[index_atual];
-                }
-
-            }
-        }
-
-
+        int index_atual = getNextIndex(index);
         lastIndex = index;
         lastNodeIndex = index_atual;
 
         return values[index_atual];
     }
 
-    public void set(int index, int item)
-    {
-
+    public void set(int index, int item) {
         if (index < 0 || index >= size()){
             throw new IndexOutOfBoundsException("Erro no set");
         }
 
-        if (lastIndex != -1){
-
-            if(index == lastIndex){
-                //System.out.println("Set -> Passei por aqui 1");
-                values[lastNodeIndex] = item;
-                return;
-
-            } else if (index == lastIndex + 1){
-
-
-                //System.out.println("Set -> Passei por aqui 2");
-
-                int x = nextIndex[lastNodeIndex];
-                if (x != -1){
-
-                    values[x] = item;
-                }
-                lastIndex = index;
-                lastNodeIndex = x;
-                return;
-
-            }else if (index == lastIndex - 1){
-
-                //System.out.println("Set -> Passei por aqui 3");
-
-                int x = prevIndex[lastNodeIndex];
-
-                if (x != -1){
-                    values[x] = item;
-                }
-
-                lastIndex = index;
-                lastNodeIndex = x;
-                return;
-            }
-        }
-
-
-        int index_atual = head;
-        for (int i = 0; i < index; i++){
-            index_atual = nextIndex[index_atual];
-        }
-        //System.out.println("Set -> Passei por aqui 4");
-
+        int index_atual = getNextIndex(index);
 
         values[index_atual] = item;
         lastIndex = index;
@@ -440,12 +301,10 @@ public class FintList implements Iterable<Integer> {
     }
 
     public int removeAt(int index) {
-
         if (index < 0 || index >= size()){
             throw new IndexOutOfBoundsException("Erro no removeAt" + index);
         }
 
-        int value = 0;
 
         if (index == 0){
             int index_remover = head;
@@ -454,7 +313,7 @@ public class FintList implements Iterable<Integer> {
                 throw new IndexOutOfBoundsException("erro no remveAt");
             }
 
-            value = values[index_remover];
+            int value = values[index_remover];
             head = nextIndex[index_remover];
 
             if (head != -1){
@@ -475,74 +334,24 @@ public class FintList implements Iterable<Integer> {
 
             return value;
 
-        }else if(index == size - 1){
+        }
+
+        if(index == size - 1){
             //System.out.println("RemoveAt ->Passei por aqui 4");
             return remove();
 
         }
 
-        int index_remover = head;
 
-        int dista_head = index;
-        int dista_tail = size-1-index;
-        int dista_lastIndex = lastIndex - index;
+        int index_remover = getNextIndex(index);
 
-        if (lastNodeIndex == -1 || lastIndex == -1){
-            dista_lastIndex = size();
-        }
-
-
-
-        if (dista_lastIndex < 0){
-            dista_lastIndex = dista_lastIndex * -1;
-        }
-
-
-        if (dista_head <= dista_lastIndex && dista_head <= dista_tail ){
-            index_remover = head;
-            for (int i = 0; i < index; i++){
-                index_remover = nextIndex[index_remover];
-            }
-        }
-        else if (dista_tail < dista_lastIndex){
-            index_remover = tail;
-            for (int i = size - 1; i > index; i--){
-                index_remover = prevIndex[index_remover];
-            }
-        }else{
-
-            if (index > lastIndex){
-
-                index_remover = lastNodeIndex;
-                for (int i = lastIndex; i < index; i++){
-                    index_remover = nextIndex[index_remover];
-                }
-            }else{
-
-                //System.out.println("Passei por Aqui - RemoveAt - da direita para a esquerda");
-
-                index_remover = lastNodeIndex;
-                for (int i = lastIndex; i > index; i--){
-                    index_remover = prevIndex[index_remover];
-                }
-
-            }
-        }
-
-
-        value = values[index_remover];
-
+        int value = values[index_remover];
         int prev = prevIndex[index_remover];
         int next = nextIndex[index_remover];
 
 
-        if (prev != -1){
-            nextIndex[prev] = nextIndex[index_remover];
-        }
-
-        if (next != -1){
-            prevIndex[next] = prevIndex[index_remover];
-        }
+        nextIndex[prev] = nextIndex[index_remover]; // não precisamos vereeficar que prev != -1 pois isso apenas acontece no caso index == 0, oq ja foi tratado
+        prevIndex[next] = prevIndex[index_remover]; // o mesmo para next mas neste caso tratamos no index == size-1
 
         nextIndex[index_remover] = freeList;
         freeList = index_remover;
@@ -551,49 +360,37 @@ public class FintList implements Iterable<Integer> {
         lastIndex = index;
         lastNodeIndex = next;
 
-
-
         return value;
     }
 
-    public int indexOf(int item)
-    {
+    public int indexOf(int item) {
         if (isEmpty()){
             return -1;
         }
 
         int index = head;
+
         for (int i = 0; i < size(); i++){
-
-            if (index == -1){
-                break;
-            }
-
-
-            if (values[index] == item){
+            int nodeValue = values[index];
+            if(nodeValue == item){
                 return i;
             }
-
             index = nextIndex[index];
         }
-
         return -1;
     }
 
-    public boolean contains(int item)
-    {
-
+    public boolean contains(int item) {
         if (isEmpty()){
             return false;
         }
 
         int index = head;
-        while (index != -1){
 
+        while (index != -1){
             if (values[index] == item){
                 return true;
             }
-
             index = nextIndex[index];
         }
 
@@ -601,34 +398,25 @@ public class FintList implements Iterable<Integer> {
     }
 
     //este método não precisa de ser eficiente
-    public boolean remove(int item)
-    {
+    public boolean remove(int item) {
         int index = indexOf(item);
+
         if (index == -1){
             return false;
         }
 
         removeAt(index);
-
-        lastNodeIndex = -1;
-        lastIndex = -1;
-
         return true;
     }
 
-    public void reverse()
-    {
-
-        lastIndex = -1;
-        lastNodeIndex = -1;
-
+    public void reverse() {
         if (isEmpty()){
             return;
         }
 
         int index = head;
-        while(index != -1){
 
+        while(index != -1){
             int prev = prevIndex[index];
             int next = nextIndex[index];
 
@@ -641,6 +429,9 @@ public class FintList implements Iterable<Integer> {
         int temp = head;
         head = tail;
         tail = temp;
+
+        lastIndex = -1;
+        lastNodeIndex = -1;
     }
 
     public FintList deepCopy()
@@ -668,16 +459,12 @@ public class FintList implements Iterable<Integer> {
     }
 
 
-    public Iterator<Integer> iterator()
-    {
-        return new FintListIterator();
-    }
+    public Iterator<Integer> iterator() { return new FintListIterator(); }
 
 
     //a utilizacao de ? super Integer e por causa da implementacao da interface Iterable
     // https://zetcode.com/java/consumer/
-    public void forEach(Consumer<? super Integer> c)
-    {
+    public void forEach(Consumer<? super Integer> c) {
         if (isEmpty()){
             return;
         }
@@ -686,7 +473,6 @@ public class FintList implements Iterable<Integer> {
 
         while (index != -1){
             c.accept(values[index]);
-
             index = nextIndex[index];
         }
     }
@@ -706,8 +492,7 @@ public class FintList implements Iterable<Integer> {
     }
 
     //https://samedesilva.medium.com/an-easy-way-to-understand-binaryoperator-functional-interface-in-java8-deabe9f04370
-    public int reduce(BinaryOperator<Integer> op, int defaultValue)
-    {
+    public int reduce(BinaryOperator<Integer> op, int defaultValue) {
         int result = defaultValue;
 
         if (head == -1 || isEmpty()){
@@ -724,29 +509,44 @@ public class FintList implements Iterable<Integer> {
         return result;
     }
 
-    public void print() {
-        if (isEmpty()) {
-            return;
-        }
-
-        int index = head;
-
-        while (index != -1) {
-            System.out.print(values[index] + " ");
-            index = nextIndex[index];
-        }
-        System.out.println();
-    }
 
     public static void main(String[] args)
     {
         FintList f = new FintList();
+        Consumer<Integer> print = c -> System.out.print(c + " ");
 
-        for (int i = 0; i < 2000000; i++) {
+
+        for (int i = 0; i < 20; i++) {
             f.addAt(i, i);
+        }
+        f.forEach(print);
+        System.out.println();
+
+        for (int i = 0; i < 20; i++) {
+            System.out.println("-> " + f.get(i));
+        }
+
+        for (int i = 0; i < 20; i++) {
+            f.set(i, i*5);
+        }
+
+        f.forEach(print);
+        System.out.println();
+
+        for (int i = 15; i >= 10; i--) {
+            f.removeAt(i);
         }
 
 
+
+        System.out.println(f.indexOf(90));
+
+        f.remove(95);
+        int z = f.removeAt(12);
+        int zz = f.removeAt(11);
+        System.out.println(z);
+
+/*
         long avgTime = TimeAnalysisUtils.getAverageCPUTime(() -> {
         });
 
@@ -772,5 +572,9 @@ public class FintList implements Iterable<Integer> {
 
         BinaryOperator<Integer> soma = (x,y) -> x+y;
         BinaryOperator<Integer> mult = (x,y) -> x*y;
+
+ */
     }
+
+
 }
