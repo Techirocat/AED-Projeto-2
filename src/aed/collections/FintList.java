@@ -1,9 +1,12 @@
 package aed.collections;
+import aed.utils.TemporalAnalysisUtils;
 import aed.utils.TimeAnalysisUtils;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 
@@ -512,69 +515,38 @@ public class FintList implements Iterable<Integer> {
 
     public static void main(String[] args)
     {
+        LinkedList<Integer> list = new LinkedList<>();
         FintList f = new FintList();
         Consumer<Integer> print = c -> System.out.print(c + " ");
 
+        //https://www.geeksforgeeks.org/java/function-interface-in-java/
+        //public static<T> void runDoublingRatioTest(Function<Integer,T> exampleGenerator, Consumer<T> methodToTest, int iterations)
 
-        for (int i = 0; i < 20; i++) {
-            f.addAt(i, i);
-        }
-        f.forEach(print);
-        System.out.println();
+        //  TESTES PARA O MÉTODO ADDAT()
 
-        for (int i = 0; i < 20; i++) {
-            System.out.println("-> " + f.get(i));
-        }
-
-        for (int i = 0; i < 20; i++) {
-            f.set(i, i*5);
-        }
-
-        f.forEach(print);
-        System.out.println();
-
-        for (int i = 15; i >= 10; i--) {
-            f.removeAt(i);
-        }
-
-
-
-        System.out.println(f.indexOf(90));
-
-        f.remove(95);
-        int z = f.removeAt(12);
-        int zz = f.removeAt(11);
-        System.out.println(z);
-
-/*
-        long avgTime = TimeAnalysisUtils.getAverageCPUTime(() -> {
-        });
-
-        System.out.println("Tempo médio de get(i): " + avgTime / 1E6 + " ms");
-
-        avgTime = TimeAnalysisUtils.getAverageCPUTime(() -> {
-            FintList f_para_testar = f.deepCopy();
-
-            for (int i = f.size() - 1; i >= 1000000; i--) {
-                f_para_testar.removeAt(i);
+        Function<Integer, FintList> exampleGenerator = n -> {
+            FintList fAddAt = new FintList();
+            for (int i = 0; i < n; i++){
+                fAddAt.addAt(i, i);
             }
-        });
-
-        System.out.println("Tempo médio de removeAt: " + avgTime / 1E6 + " ms");
-
-
-
-        Consumer<Integer> a = p -> {
-            System.out.println(p*3);
+            return fAddAt;
         };
 
-        UnaryOperator<Integer> b = c -> c * 4;
+        Consumer<FintList> ADDAT = fAddAt -> {
+            fAddAt.addAt(fAddAt.size(),88387);
+        };
 
-        BinaryOperator<Integer> soma = (x,y) -> x+y;
-        BinaryOperator<Integer> mult = (x,y) -> x*y;
 
- */
+        TemporalAnalysisUtils.runDoublingRatioTest(exampleGenerator, ADDAT, 20);
+
+        //  TESTES PARA O MÉTODO REMOVEAT()
+
+        //  TESTES PARA O MÉTODO CONTAINS()
+
+        //  TESTES PARA O MÉTODO DEEPCOPY()
+
+
+
+
     }
-
-
 }
