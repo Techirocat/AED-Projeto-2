@@ -2,8 +2,9 @@ package aed.collections;
 import aed.utils.TemporalAnalysisUtils;
 import aed.utils.TimeAnalysisUtils;
 
+
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Random;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -515,35 +516,104 @@ public class FintList implements Iterable<Integer> {
 
     public static void main(String[] args)
     {
-        LinkedList<Integer> list = new LinkedList<>();
-        FintList f = new FintList();
-        Consumer<Integer> print = c -> System.out.print(c + " ");
+        //LinkedList<Integer> l = new LinkedList<>();
+        //FintList f = new FintList();
+        //Consumer<Integer> print = c -> System.out.print(c + " ");
+        Random random = new Random();
+
+
+        Function<Integer, FintList> FinListGenerator = n -> {
+            FintList list = new FintList();
+            for (int i = 0; i < n; i++) {
+                list.add(i);
+            }
+            return list;
+        };
+
+        Function<Integer, LinkedList<Integer>> LinkedListGenerator = n -> {
+            LinkedList<Integer> list = new LinkedList<>();
+            for (int i = 0; i < n; i++) {
+                list.add(i);
+            }
+            return list;
+        };
 
         //https://www.geeksforgeeks.org/java/function-interface-in-java/
         //public static<T> void runDoublingRatioTest(Function<Integer,T> exampleGenerator, Consumer<T> methodToTest, int iterations)
 
+
+
+
         //  TESTES PARA O MÉTODO ADDAT()
+        System.out.println("#################### Método addAt() ###############################");
 
-        Function<Integer, FintList> exampleGenerator = n -> {
-            FintList fAddAt = new FintList();
+        Consumer<FintList> FTestAddAt = list -> {
+            int n = list.size();
             for (int i = 0; i < n; i++){
-                fAddAt.addAt(i, i);
+                list.addAt(i, i);
             }
-            return fAddAt;
+        };
+        Consumer<LinkedList<Integer>> LTestAddAt = list -> {
+            int n = list.size();
+            for (int i = 0; i < n; i++){
+                list.addAt(i, i);
+            }
         };
 
-        Consumer<FintList> ADDAT = fAddAt -> {
-            fAddAt.addAt(fAddAt.size(),88387);
-        };
+        System.out.println("==== FinList ====");
+        //TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestAddAt, 18);
+        System.out.println("==== LinkedList ====");
+        //TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestAddAt, 9);
 
 
-        TemporalAnalysisUtils.runDoublingRatioTest(exampleGenerator, ADDAT, 20);
 
         //  TESTES PARA O MÉTODO REMOVEAT()
+        System.out.println("#################### Método RemoveAt ###############################");
 
-        //  TESTES PARA O MÉTODO CONTAINS()
+        Consumer<FintList> FTestRemoveAt = list -> {
+            int n = list.size();
+            for (int i = n - 1; i >= 0; i--){
+                list.removeAt(i);
+            }
+        };
+
+        Consumer<LinkedList<Integer>> LTestRemoveAt = list -> {
+            int n = list.size();
+            for (int i = n - 1; i >= 0; i--){
+                list.removeAt(i);
+            }
+        };
+
+
+        System.out.println("==== FinList ====");
+       // TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestRemoveAt, 18);
+        System.out.println("==== LinkedList ====");
+        //TimeAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestRemoveAt, 9);
+
+
+
 
         //  TESTES PARA O MÉTODO DEEPCOPY()
+
+        System.out.println("#################### Método DeepCopy ###############################");
+
+
+        Consumer<FintList> FTestDeepCopy = list -> {
+            FintList fintLististCopy = list.deepCopy();
+        };
+
+        Consumer<LinkedList<Integer>> LTestDeepCopy = list -> {
+            for (int i = 0; i < 1; i++){
+                LinkedList<Integer> linkedListCopy = list.shallowCopy();
+            }
+        };
+
+        System.out.println("==== FinList ====");
+        //TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestDeepCopy, 18);
+        System.out.println("==== LinkedList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestDeepCopy, 9);
+
+
 
 
 
