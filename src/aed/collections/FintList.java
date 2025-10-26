@@ -1,7 +1,5 @@
 package aed.collections;
 import aed.utils.TemporalAnalysisUtils;
-import aed.utils.TimeAnalysisUtils;
-
 
 import java.util.Iterator;
 import java.util.Random;
@@ -10,12 +8,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-
-/*
-TODO:
-
-Este código esta enorme hahaah, que eu estou me a passar haha
- */
 
 public class FintList implements Iterable<Integer> {
 
@@ -186,14 +178,11 @@ public class FintList implements Iterable<Integer> {
             resize(2*capacity);
         }
 
-
         int newIndex = freeList;
         freeList = nextIndex[newIndex];
         values[newIndex] = item;
 
-
         if (index == 0){
-
             prevIndex[newIndex] = -1;
             nextIndex[newIndex] = head;
 
@@ -213,10 +202,8 @@ public class FintList implements Iterable<Integer> {
             return;
         }
 
-
         int next_index = getNextIndex(index);
         int prev = prevIndex[next_index];
-
         nextIndex[newIndex] = next_index;
         prevIndex[newIndex] = prev;
 
@@ -229,7 +216,6 @@ public class FintList implements Iterable<Integer> {
         size++;
         lastNodeIndex = newIndex;
         lastIndex = index;
-        
     }
 
     private int getNextIndex(int index) {
@@ -521,7 +507,6 @@ public class FintList implements Iterable<Integer> {
         //Consumer<Integer> print = c -> System.out.print(c + " ");
         Random random = new Random();
 
-
         Function<Integer, FintList> FinListGenerator = n -> {
             FintList list = new FintList();
             for (int i = 0; i < n; i++) {
@@ -538,37 +523,31 @@ public class FintList implements Iterable<Integer> {
             return list;
         };
 
-        //https://www.geeksforgeeks.org/java/function-interface-in-java/
-        //public static<T> void runDoublingRatioTest(Function<Integer,T> exampleGenerator, Consumer<T> methodToTest, int iterations)
-
-
-
-
-        //  TESTES PARA O MÉTODO ADDAT()
-        System.out.println("#################### Método addAt() ###############################");
-
         Consumer<FintList> FTestAddAt = list -> {
             int n = list.size();
             for (int i = 0; i < n; i++){
-                list.addAt(i, i);
+                list.addAt(list.size(), n);
             }
         };
         Consumer<LinkedList<Integer>> LTestAddAt = list -> {
             int n = list.size();
             for (int i = 0; i < n; i++){
-                list.addAt(i, i);
+                list.addAt(list.size(), n);
             }
         };
 
-        System.out.println("==== FinList ====");
-        //TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestAddAt, 18);
-        System.out.println("==== LinkedList ====");
-        //TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestAddAt, 9);
-
-
-
-        //  TESTES PARA O MÉTODO REMOVEAT()
-        System.out.println("#################### Método RemoveAt ###############################");
+        Consumer<FintList> FTestAddAtRandom = list -> {
+            int n = list.size();
+            for (int i = 0; i < n; i++){
+                list.addAt(random.nextInt(n), n);
+            }
+        };
+        Consumer<LinkedList<Integer>> LTestAddAtRandom = list -> {
+            int n = list.size();
+            for (int i = 0; i < n; i++){
+                list.addAt(random.nextInt(n), n);
+            }
+        };
 
         Consumer<FintList> FTestRemoveAt = list -> {
             int n = list.size();
@@ -576,7 +555,6 @@ public class FintList implements Iterable<Integer> {
                 list.removeAt(i);
             }
         };
-
         Consumer<LinkedList<Integer>> LTestRemoveAt = list -> {
             int n = list.size();
             for (int i = n - 1; i >= 0; i--){
@@ -584,37 +562,82 @@ public class FintList implements Iterable<Integer> {
             }
         };
 
-
-        System.out.println("==== FinList ====");
-       // TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestRemoveAt, 18);
-        System.out.println("==== LinkedList ====");
-        //TimeAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestRemoveAt, 9);
-
-
-
-
-        //  TESTES PARA O MÉTODO DEEPCOPY()
-
-        System.out.println("#################### Método DeepCopy ###############################");
-
+        Consumer<FintList> FTestRemoveAtRandom = list -> {
+            int n = list.size();
+            for (int i = n - 1; i > 0; i--){
+                list.removeAt(random.nextInt(i));
+            }
+        };
+        Consumer<LinkedList<Integer>> LTestRemoveAtRandom = list -> {
+            int n = list.size();
+            for (int i = n - 1; i > 0; i--){
+                list.removeAt(random.nextInt(i));
+            }
+        };
 
         Consumer<FintList> FTestDeepCopy = list -> {
             FintList fintLististCopy = list.deepCopy();
         };
-
         Consumer<LinkedList<Integer>> LTestDeepCopy = list -> {
-            for (int i = 0; i < 1; i++){
-                LinkedList<Integer> linkedListCopy = list.shallowCopy();
-            }
+            LinkedList<Integer> linkedListCopy = list.shallowCopy();
         };
 
+        System.out.println("#################### Método addAt() ###############################");
+
+        System.out.println("#################### Método addAt - Teste de indexes seguidos ###############################");
         System.out.println("==== FinList ====");
-        //TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestDeepCopy, 18);
+        TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestAddAt, 18);
+        System.out.println("==== LinkedList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestAddAt, 9);
+
+        System.out.println("#################### Método addAt - Teste de indexes random ###############################");
+        System.out.println("==== FinList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestAddAtRandom, 9);
+        System.out.println("==== LinkedList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestAddAtRandom, 9);
+
+
+
+        System.out.println("#################### Método RemoveAt ###############################");
+
+        System.out.println("#################### Método RemoveAt - Teste dos Indexes seguidos ###############################");
+        System.out.println("==== FinList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestRemoveAt, 18);
+        System.out.println("==== LinkedList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestRemoveAt, 9);
+
+        System.out.println("#################### Método RemoveAt - Teste dos Indexes Random ###############################");
+        System.out.println("==== FinList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestRemoveAtRandom, 9);
+        System.out.println("==== LinkedList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestRemoveAtRandom, 9);
+
+
+
+        System.out.println("#################### Método DeepCopy ###############################");
+
+        System.out.println("==== FinList ====");
+        TemporalAnalysisUtils.runDoublingRatioTest(FinListGenerator, FTestDeepCopy, 18);
         System.out.println("==== LinkedList ====");
         TemporalAnalysisUtils.runDoublingRatioTest(LinkedListGenerator, LTestDeepCopy, 9);
 
 
+/*
+        int n = 125;
+        for (int i = 1; i < 30; i++){
+            LinkedList<Integer> l = new LinkedList<>();
+            for (int j = 0; j < n; j++){
+                l.add(i);
+            }
 
+            long avgTime = TemporalAnalysisUtils.getAverageCPUTime(() -> {
+                LinkedList<Integer> lCopy = l.shallowCopy();
+            });
+            System.out.println("n = "+ n + "-  Tempo médio de DeepCopy: " + avgTime + " ms");
+            n = n * 2;
+        }
+
+ */
 
 
 
